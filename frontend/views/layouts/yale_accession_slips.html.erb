@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <%= include_theme_css %>
+    <style>
+      body {
+        background: #FFFFFF !important;
+      }
+    </style>
+  </head>
+  <body>
+    <%= yield %>
+
+    <% if @print %>
+      <script>
+        window.print();
+      </script>
+    <% end %>
+  </body>
+</html>

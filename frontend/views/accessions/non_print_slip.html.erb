@@ -1,0 +1,154 @@
+
+<%= include_theme_css %>
+
+<%
+  active_material_types = []
+  if @accession.material_types
+    JSONModel(:material_types).schema["properties"].select{|_,v| v["type"] == "boolean"}.each do |material_type,_|
+      if @accession.material_types[material_type]
+        active_material_types << I18n.t("plugins.material_type.#{material_type}", :default => material_type)
+      end
+    end
+  end
+
+  authors = []
+  publishers = []
+  ASUtils.wrap(@accession.linked_agents).each do |linked_agent|
+    if linked_agent["role"] == "creator"
+      if linked_agent["relator"] == "aut"
+        authors << linked_agent["_resolved"]["title"]
+      end
+    end
+    if linked_agent["relator"] == "pbl"
+      publishers << linked_agent["_resolved"]["title"]
+    end
+  end
+
+  creation_years = []
+  ASUtils.wrap(@accession.dates).each do |date|
+    if date["label"] == "creation"
+      if date["begin"]
+        creation_years << date["begin"][0..3]
+      elsif date["end"]
+        creation_years << date["end"][0..3]
+      else
+        creation_years << date["expression"]
+      end
+    end
+  end
+
+  payment_fund_codes = []
+  payment_total = ""
+  payment_currency = ""
+  if @accession.payment_summary
+    payment_total = @accession.payment_summary["total_price"]
+    payment_currency = @accession.payment_summary["currency"]
+    ASUtils.wrap(@accession.payment_summary["payments"]).each do |payment|
+      payment_fund_codes << payment["fund_code"]
+    end
+  end
+%>
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-6">
+      <div class="row">
+        <div class="col-xs-6"><%= Time.now.strftime('%d %b %Y') %></div>
+        <div class="col-xs-6"><%= @accession.created_by %></div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+      <div class="row">
+        <div class="col-xs-4"><%= @accession.id_1 %></div>
+        <div class="col-xs-4 text-center"><%= @accession.user_defined ? @accession.user_defined["string_2"] : "" %></div>
+        <div class="col-xs-4 text-right"><%= Date::strptime(@accession.accession_date, "%Y-%m-%d").strftime('%d %b %Y') %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12"><%= active_material_types.sort.join(', ') %></div>
+      </div>
+    </div>
+  </div>
+
+  <br>
+
+  <div class="row">
+    <div class="col-xs-6">
+      <div class="row">
+        <div class="col-xs-12 text-center">IN-PROCESS SHEET -- <%= current_repo['repo_code'] %></div>
+      </div>
+
+      <br>
+    </div>
+    <div class="col-xs-6">
+      <div class="row">
+        <div class="col-xs-12">Adds to:</div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6">
+      <div class="row">
+        <div class="col-xs-12">To conservation for:</div>
+      </div>
+    </div>
+    <div class="col-xs-6">
+      <div class="row">
+        <div class="col-xs-12"><%= authors.uniq.sort.join("; ") %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12"><%= @accession["title"] %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12"><%= @accession.user_defined ? @accession.user_defined["string_3"] : "" %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12"><%= publishers.uniq.sort.join("; ") %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12"><%= creation_years.uniq.sort.join("; ") %></div>
+      </div>
+      <!-- <div class="row">
+        <div class="col-xs-12">TODO Other Biblio Fields as determined</div>
+      </div> -->
+
+      <br>
+
+      <div class="row">
+        <div class="col-xs-12"><%== @accession.user_defined ? preserve_newlines(@accession.user_defined["text_5"]) : "" %></div>
+      </div>
+
+      <br>
+
+      <div class="row">
+        <div class="col-xs-6">FUND: <%= payment_fund_codes.uniq.sort.join(", ") %></div>
+        <div class="col-xs-6">PRICE: <%= payment_currency %> <%= payment_total %></div>
+      </div>
+
+      <br>
+
+      <div class="row">
+        <div class="col-xs-12">Curator Notes:</div>
+      </div>
+
+      <div style="padding-bottom: 16em"></div>
+
+      <div class="row">
+        <div class="col-xs-12">Make tracing for:</div>
+      </div>
+
+      <div style="padding-bottom: 8em"></div>
+
+      <div class="row">
+        <div class="col-xs-12">Class:</div>
+      </div>
+
+      <br>
+
+      <div class="row">
+        <div class="col-xs-6">Ref.</div>
+        <div class="col-xs-6">Stack Ref</div>
+      </div>
+    </div>
+  </div>
+</div>

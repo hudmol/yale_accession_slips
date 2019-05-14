@@ -1,0 +1,6 @@
+<% if controller_name == 'accessions' && ['show', 'edit', 'update'].include?(action_name) %>
+  <%= javascript_include_tag "#{AppConfig[:frontend_prefix]}assets/yale_accession_slips.js" %>
+  <script>
+    ACCESSION_ID = <%= @accession.id %>;
+  </script>
+<% end %>
