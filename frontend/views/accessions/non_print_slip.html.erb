@@ -1,6 +1,6 @@
 <header>
   <div style="float:left"><%= [@accession.id_0, @accession.id_1, @accession.id_2, @accession.id_3].compact.join('-') %></div>
-  <div style="float:right"><%= 'FIXME' %></div>
+  <div style="float:right"><%= @accession.user_defined ? @accession.user_defined['text_1'] : '' %></div>
 </header>
 
 <div class="clearfix"></div>
@@ -27,12 +27,24 @@
     ['access_restrictions_note'],
     ['use_restrictions', proc {@accession.use_restrictions.to_s.capitalize}],
     ['access_restrictions_note'],
-    ['Restriction Review Date (accessions only)', proc {'FIXME'}],
-    ['Call Number (accessions only)', proc {'FIXME'}],
-    ['Authorization Received (accessions only)', proc {'FIXME'}],
-    ['Record Reviewed (accessions only)', proc {'FIXME'}],
-    ['Accession Completed Date (accessions only)', proc {'FIXME'}],
-    ['Voyager Bib ID', proc {'FIXME'}],
+    [I18n.t('accession.user_defined.date_1'), proc { @accession.user_defined ? @accession.user_defined['date_1'] : nil }],
+    [I18n.t('accession.user_defined.text_1'), proc { @accession.user_defined ? @accession.user_defined['text_1'] : nil }],
+    [I18n.t('accession.user_defined.boolean_1'), 
+     proc { 
+        val = @accession.user_defined ? @accession.user_defined['boolean_1'] : nil
+        unless val.nil?
+          val.to_s.capitalize
+        end
+     }],
+    [I18n.t('accession.user_defined.boolean_2'), 
+     proc {
+        val = @accession.user_defined ? @accession.user_defined['boolean_2'] : nil
+        unless val.nil?
+          val.to_s.capitalize
+        end
+     }],
+    [I18n.t('accession.user_defined.date_2'), proc { @accession.user_defined ? @accession.user_defined['date_2'] : nil }],
+    [I18n.t('accession.user_defined.string_2'), proc { @accession.user_defined ? @accession.user_defined['string_2'] : nil }],
   ]
 
   collection_management_fields = [
@@ -46,9 +58,21 @@
     ['physical_details'],
     ['dimensions'],
   ]
+
+  user_defined_fields = [
+    ['string_1'],
+    ['string_3'],
+    ['string_4'],
+    ['text_2'],
+    ['text_3'],
+    ['text_4'],
+    ['text_5'],
+    ['enum_1'],
+    ['enum_2']
+  ]
 %>
 
-<div style="display: flex;flex-direction: column;flex-wrap: wrap;">
+<div style="column-count: 2;">
   <div><strong>BASIC INFORMATION</strong></div>
   <% basic_information_fields.each do |field, value_proc| %>
     <% render_print_item(I18n.t("accession.#{field}", :default => field), value_proc ? value_proc.call : @accession[field]) %>
@@ -92,9 +116,80 @@
     <% end %>
   <% end %>
 
+  <% unless @accession.related_resources.empty? %>
+    <div><strong>RELATED RESOURCES</strong></div>
+    <% @accession.related_resources.each do |related_resource| %>
+      <div>
+        <%= related_resource.dig('_resolved', 'title') %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% unless @accession.related_accessions.empty? %>
+    <div><strong>RELATED ACCESSIONS</strong></div>
+    <% @accession.related_accessions.each do |related_accession| %>
+      <div>
+        <%= related_accession.dig('_resolved', 'title') %> 
+        (<%= related_accession['jsonmodel_type'] == 'accession_sibling_relationship' ? I18n.t("enumerations.accession_sibling_relator.#{related_accession['relator']}") : I18n.t("enumerations.accession_parts_relator.#{related_accession['relator']}") %>)
+      </div>
+    <% end %>
+  <% end %>
+
+  <% unless @accession.related_accessions.empty? %>
+    <div><strong>SUBJECTS</strong></div>
+    <% @accession.subjects.each do |subject| %>
+      <div>
+        <%= subject.dig('_resolved', 'title') %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <% unless @accession.deaccessions.empty? %>
+    <div><strong>DEACCESSIONS</strong></div>
+    <% @accession.deaccessions.each do |deaccession| %>
+      <div>
+        <%= deaccession['description'] %> (<%= I18n.t("enumerations.deaccession_scope.#{deaccession['scope']}") %>)
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if @accession.user_defined %>
+    <div><strong>USER DEFINED</strong></div>
+    <% user_defined_fields.each do |field, value_proc| %>
+      <% render_print_item(I18n.t("accession.user_defined.#{field}", :default => field), value_proc ? value_proc.call(@accession.user_defined) : @accession.user_defined[field]) %>
+    <% end %>
+  <% end %>
+
+  <% if @accession.material_types %>
+    <div><strong>MATERIAL TYPES</strong></div>
+    <div>
+      <%= ["books", "games", "maps", "microforms", "realia", "serials",
+           "audiovisual_materials", "electronic_documents", "manuscripts",
+           "photographs", "works_of_art"]
+            .select{|type| @accession.material_types[type] == true}
+            .collect{|type| I18n.t("plugins.material_type.#{type}")}
+            .join(', ') %>
+    </div>
+  <% end %>
+
+  <% if @accession.payment_summary %>
+    <div><strong>PAYMENT SUMMARY</strong></div>
+    <% render_print_item(I18n.t("payment_summary.total_price"), @accession.payment_summary['total_price']) %>
+    <% render_print_item(I18n.t("payment_summary.currency"), I18n.t("enumerations.currency_iso_4217.#{@accession.payment_summary['currency']}")) %>
+    <% render_print_item(I18n.t("payment_summary.in_lot"), @accession.payment_summary['in_lot'].to_s.capitalize) %>
+    <% ASUtils.wrap(@accession.payment_summary['payments']).sort{|a,b| a['payment_date'] <=> b['payment_date']}.each do |payment| %>
+      <div><strong>Payment - <%= payment['payment_date'] %></strong></div>
+      <% render_print_item(I18n.t("payment.invoice_number"), payment['invoice_number']) %>
+      <% render_print_item(I18n.t("payment.amount"), payment['amount']) %>
+      <% render_print_item(I18n.t("payment.fund_code"), I18n.t("enumerations.payment_fund_code.#{payment['fund_code']}", :default => payment['fund_code'])) %>
+      <% render_print_item(I18n.t("payment.usd_amount"), payment['usd_amount']) %>
+      <% render_print_item(I18n.t("payment.authorizer"), payment.dig('authorizer', '_resolved', 'title')) %>
+      <% render_print_item(I18n.t("payment.note"), payment.dig('note')) %>
+    <% end %>
+  <% end %>
 </div>
 
 <footer>
-  <div style="float:left">FIXME URL GOES HERE</div>
-  <div style="float:right">Printed <%= Date.today %></div>
+  <div style="float:left"><%= "#{AppConfig[:frontend_proxy_url]}/accessions/#{@accession.id}" %></div>
+  <div style="float:right">Printed <%= Date.today.strftime('%-m/%-d/%y') %></div>
 </footer>

@@ -5,7 +5,13 @@ class YaleAccessionSlipsController < ApplicationController
   layout 'yale_accession_slips'
 
   def non_print_slip
-    @accession = Accession.find(params[:id], find_opts)
+    to_resolve = find_opts.fetch("resolve[]")
+    to_resolve << 'payment_summary::payments::authorizer'
+
+    @accession = Accession.find(params[:id], {
+      "resolve[]" => to_resolve,
+    })
+
     @print = params[:print] != '0'
     render template: 'accessions/non_print_slip'
   end
