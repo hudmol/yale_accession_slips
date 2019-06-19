@@ -19,6 +19,7 @@
       ['restrictions_apply', proc {@accession.restrictions_apply.to_s.capitalize}],
       ['access_restrictions_note'],
       ['use_restrictions', proc {@accession.use_restrictions.to_s.capitalize}],
+      ['access_restrictions', proc {@accession.access_restrictions.to_s.capitalize}],
       ['access_restrictions_note'],
       [I18n.t('accession.user_defined.date_1'), proc { @accession.user_defined ? @accession.user_defined['date_1'] : nil }],
       [I18n.t('accession.user_defined.text_1'), proc { @accession.user_defined ? @accession.user_defined['text_1'] : nil }],
