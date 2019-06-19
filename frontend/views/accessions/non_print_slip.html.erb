@@ -126,7 +126,8 @@
               <div>
                 <% @accession.extents.each do |extent| %>
                   <div>
-                    <div><%= I18n.t("enumerations.extent_portion.#{extent['portion']}") %> <%= extent['number'] %> <%= I18n.t("enumerations.extent_extent_type.#{extent['extent_type']}") %></div>
+                    <div><%= I18n.t("enumerations.extent_portion.#{extent['portion']}") %></div>
+                    <div><%= extent['number'] %> <%= I18n.t("enumerations.extent_extent_type.#{extent['extent_type']}") %></div>
                     <% extent_fields.each do |field, value_proc| %>
                       <% render_print_item(I18n.t("extent.#{field}", :default => field), value_proc ? value_proc.call(extent) : extent[field]) %>
                     <% end %>
