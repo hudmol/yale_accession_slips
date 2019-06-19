@@ -15,6 +15,7 @@
       ['retention_rule'],
       ['general_note'],
       ['acquisition_type', proc {@accession.acquisition_type ? I18n.t("enumerations.accession_acquisition_type.#{@accession.acquisition_type}", :default => @accession.acquisition_type) : nil}],
+      ['resource_type', proc {@accession.resource_type ? I18n.t("enumerations.accession_resource_type.#{@accession.resource_type}", :default => @accession.resource_type) : nil}],
       ['restrictions_apply', proc {@accession.restrictions_apply.to_s.capitalize}],
       ['access_restrictions_note'],
       ['use_restrictions', proc {@accession.use_restrictions.to_s.capitalize}],
