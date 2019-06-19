@@ -45,6 +45,7 @@
       ['processing_priority', proc {|collection_management| collection_management['processing_priority'] ? I18n.t("enumerations.collection_management_processing_priority.#{collection_management['processing_priority']}", :default => collection_management['processing_priority']) : nil}],
       ['processors'],
       ['processing_plan'],
+      ['processing_status', proc {|collection_management| collection_management['processing_status'] ? I18n.t("enumerations.collection_management_processing_status.#{collection_management['processing_status']}", :default => collection_management['processing_status']) : nil}],
   ]
 
   extent_fields = [
