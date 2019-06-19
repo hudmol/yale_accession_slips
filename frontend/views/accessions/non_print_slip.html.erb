@@ -234,9 +234,9 @@
                 <% render_print_item(I18n.t("payment_summary.total_price"), @accession.payment_summary['total_price']) %>
                 <% render_print_item(I18n.t("payment_summary.currency"), I18n.t("enumerations.currency_iso_4217.#{@accession.payment_summary['currency']}")) %>
                 <% render_print_item(I18n.t("payment_summary.in_lot"), @accession.payment_summary['in_lot'].to_s.capitalize) %>
-                <% ASUtils.wrap(@accession.payment_summary['payments']).sort{|a,b| a['payment_date'] <=> b['payment_date']}.each do |payment| %>
+                <% ASUtils.wrap(@accession.payment_summary['payments']).each do |payment| %>
                   <div class="print-slip-grouping">
-                    <div><strong>Payment - <%= payment['payment_date'] %></strong></div>
+                    <div><strong><%= ['Payment', payment['payment_date']].compact.join(', ')%></strong></div>
                     <% render_print_item(I18n.t("payment.invoice_number"), payment['invoice_number']) %>
                     <% render_print_item(I18n.t("payment.amount"), payment['amount']) %>
                     <% render_print_item(I18n.t("payment.fund_code"), I18n.t("enumerations.payment_fund_code.#{payment['fund_code']}", :default => payment['fund_code'])) %>
