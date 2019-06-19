@@ -10,7 +10,7 @@ NonPrintSlip.prototype.setupLink = function() {
     var self = this;
 
     var $li = $('<li>');
-    var $a = $('<a>').attr('href', 'javascript:void(0)').attr('id', self.linkId).html('Print non-print slip');
+    var $a = $('<a>').attr('href', 'javascript:void(0)').attr('id', self.linkId).html('Print accession record');
 
     $li.append($a);
     $('#other-dropdown > .dropdown-menu').append($li);
