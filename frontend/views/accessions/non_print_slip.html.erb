@@ -235,13 +235,15 @@
                 <% render_print_item(I18n.t("payment_summary.currency"), I18n.t("enumerations.currency_iso_4217.#{@accession.payment_summary['currency']}")) %>
                 <% render_print_item(I18n.t("payment_summary.in_lot"), @accession.payment_summary['in_lot'].to_s.capitalize) %>
                 <% ASUtils.wrap(@accession.payment_summary['payments']).sort{|a,b| a['payment_date'] <=> b['payment_date']}.each do |payment| %>
-                  <div><strong>Payment - <%= payment['payment_date'] %></strong></div>
-                  <% render_print_item(I18n.t("payment.invoice_number"), payment['invoice_number']) %>
-                  <% render_print_item(I18n.t("payment.amount"), payment['amount']) %>
-                  <% render_print_item(I18n.t("payment.fund_code"), I18n.t("enumerations.payment_fund_code.#{payment['fund_code']}", :default => payment['fund_code'])) %>
-                  <% render_print_item(I18n.t("payment.usd_amount"), payment['usd_amount']) %>
-                  <% render_print_item(I18n.t("payment.authorizer"), payment.dig('authorizer', '_resolved', 'title')) %>
-                  <% render_print_item(I18n.t("payment.note"), payment.dig('note')) %>
+                  <div class="print-slip-grouping">
+                    <div><strong>Payment - <%= payment['payment_date'] %></strong></div>
+                    <% render_print_item(I18n.t("payment.invoice_number"), payment['invoice_number']) %>
+                    <% render_print_item(I18n.t("payment.amount"), payment['amount']) %>
+                    <% render_print_item(I18n.t("payment.fund_code"), I18n.t("enumerations.payment_fund_code.#{payment['fund_code']}", :default => payment['fund_code'])) %>
+                    <% render_print_item(I18n.t("payment.usd_amount"), payment['usd_amount']) %>
+                    <% render_print_item(I18n.t("payment.authorizer"), payment.dig('authorizer', '_resolved', 'title')) %>
+                    <% render_print_item(I18n.t("payment.note"), payment.dig('note')) %>
+                  </div>
                 <% end %>
               </div>
             </section>
