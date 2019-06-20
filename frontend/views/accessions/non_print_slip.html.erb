@@ -2,6 +2,17 @@
   <% return '' if value.blank? %><div class="print-slip-label-and-value"><span class="print-slip-label"><%= label %></span> <span class="print-slip-value"><%= value %></span></div>
 <% end %>
 
+<% 
+def format_currency(value, unit = "$")
+  begin
+    number_to_currency(value, unit: unit)
+  rescue # catch InvalidNumberError etc
+    value
+  end
+end
+%>
+
+
 <%
   basic_information_fields = [
       ['title'],
@@ -238,10 +249,10 @@
                   <div class="print-slip-grouping">
                     <div><strong><%= ['Payment', index + 1].join(' ')%></strong></div>
                     <% render_print_item(I18n.t("payment.invoice_number"), payment['invoice_number']) %>
-                    <% render_print_item(I18n.t("payment.amount"), payment['amount']) %>
+                    <% render_print_item(I18n.t("payment.amount"), payment['amount'] ? format_currency(payment['amount'], "") : nil) %>
                     <% render_print_item(I18n.t("payment.payment_date"), payment['payment_date']) %>
                     <% render_print_item(I18n.t("payment.fund_code"), I18n.t("enumerations.payment_fund_code.#{payment['fund_code']}", :default => payment['fund_code'])) %>
-                    <% render_print_item(I18n.t("payment.usd_amount"), payment['usd_amount']) %>
+                    <% render_print_item(I18n.t("payment.usd_amount"), payment['usd_amount'] ? format_currency(payment['usd_amount']) : nil) %>
                     <% render_print_item(I18n.t("payment.authorizer"), payment.dig('authorizer', '_resolved', 'title')) %>
                     <% render_print_item(I18n.t("payment.note"), payment.dig('note')) %>
                   </div>
