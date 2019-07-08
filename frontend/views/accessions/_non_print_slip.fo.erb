@@ -144,12 +144,15 @@ end
       <% unless @accession.extents.empty? %>
         <fo:block space-before="8pt">
           <fo:block font-weight="bold">EXTENTS</fo:block>
-          <% @accession.extents.each do |extent| %>
-            <fo:block><%= I18n.t("enumerations.extent_portion.#{extent['portion']}") %></fo:block>
-            <fo:block><%= extent['number'] %> <%= I18n.t("enumerations.extent_extent_type.#{extent['extent_type']}") %></fo:block>
-            <% extent_fields.each do |field, value_proc| %>
-              <% render_print_item(I18n.t("extent.#{field}", :default => field), value_proc ? value_proc.call(extent) : extent[field]) %>
-            <% end %>
+          <% @accession.extents.each_with_index do |extent, index| %>
+            <fo:block border-top-style="solid" border-top-width="<% if index > 0 %>1pt<% else %>0pt<% end %>" border-top-color="#CCCCCC" space-before="4pt">
+              <fo:block space-before="4pt" font-weight="bold"><%= ['Extent', index + 1].join(' ')%></fo:block>
+              <fo:block><%= I18n.t("enumerations.extent_portion.#{extent['portion']}", :default => extent['portion']) %></fo:block>
+              <fo:block><%= extent['number'] %> <%= I18n.t("enumerations.extent_extent_type.#{extent['extent_type']}", :default => extent['extent_type']) %></fo:block>
+              <% extent_fields.each do |field, value_proc| %>
+                <% render_print_item(I18n.t("extent.#{field}", :default => field), value_proc ? value_proc.call(extent) : extent[field]) %>
+              <% end %>
+            </fo:block>
           <% end %>
         </fo:block>
       <% end %>
