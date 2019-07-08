@@ -178,7 +178,7 @@ end
         <fo:block space-before="8pt">
           <fo:block font-weight="bold">RELATED ACCESSIONS</fo:block>
           <% @accession.related_accessions.each do |related_accession| %>
-            <fo:block linefeed-treatment="preserve" white-space-collapse="false"><%= strip_html(related_accession.dig('_resolved', 'title')) %> (<%= related_accession['jsonmodel_type'] == 'accession_sibling_relationship' ? I18n.t("enumerations.accession_sibling_relator.#{related_accession['relator']}") : I18n.t("enumerations.accession_parts_relator.#{related_accession['relator']}") %>)</fo:block>
+            <fo:block linefeed-treatment="preserve" white-space-collapse="false"><%= strip_html(related_accession.dig('_resolved', 'title')) %> (<%= related_accession['jsonmodel_type'] == 'accession_sibling_relationship' ? I18n.t("enumerations.accession_sibling_relator.#{related_accession['relator']}", :default => related_accession['relator']) : I18n.t("enumerations.accession_parts_relator.#{related_accession['relator']}", :default => related_accession['relator']) %>)</fo:block>
           <% end %>
         </fo:block>
       <% end %>
@@ -194,7 +194,7 @@ end
         <fo:block space-before="8pt">
           <fo:block font-weight="bold">DEACCESSIONS</fo:block>
           <% @accession.deaccessions.each do |deaccession| %>
-            <fo:block linefeed-treatment="preserve" white-space-collapse="false"><%= deaccession['description'] %> (<%= I18n.t("enumerations.deaccession_scope.#{deaccession['scope']}") %>)</fo:block>
+            <fo:block linefeed-treatment="preserve" white-space-collapse="false"><%= deaccession['description'] %> (<%= I18n.t("enumerations.deaccession_scope.#{deaccession['scope']}", :default => deaccession['scope']) %>)</fo:block>
           <% end %>
         </fo:block>
       <% end %>
@@ -223,7 +223,7 @@ end
         <fo:block space-before="8pt">
           <fo:block font-weight="bold">PAYMENT SUMMARY</fo:block>
           <% render_print_item(I18n.t("payment_summary.total_price"), @accession.payment_summary['total_price']) %>
-          <% render_print_item(I18n.t("payment_summary.currency"), I18n.t("enumerations.currency_iso_4217.#{@accession.payment_summary['currency']}")) %>
+          <% render_print_item(I18n.t("payment_summary.currency"), I18n.t("enumerations.currency_iso_4217.#{@accession.payment_summary['currency']}", :default => @accession.payment_summary['currency'])) %>
           <% render_print_item(I18n.t("payment_summary.in_lot"), @accession.payment_summary['in_lot'].to_s.capitalize) %>
           <% ASUtils.wrap(@accession.payment_summary['payments']).each_with_index do |payment, index| %>
             <fo:block border-top-style="solid" border-top-width="1pt" border-top-color="#CCCCCC" space-before="4pt">
