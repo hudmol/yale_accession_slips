@@ -206,7 +206,7 @@ end
           <% end %>
         </fo:block>
       <% end %>
-      <% if @accession.material_types %>
+      <% if @accession.respond_to?(:material_types) && @accession.material_types %>
         <fo:block space-before="8pt">
           <fo:block font-weight="bold">MATERIAL TYPES</fo:block>
           <fo:block>
