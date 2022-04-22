@@ -219,7 +219,7 @@ end
           </fo:block>
         </fo:block>
       <% end %>
-      <% if @accession.payment_summary %>
+      <% if @accession.respond_to?(:payment_summary) && @accession.payment_summary %>
         <fo:block space-before="8pt">
           <fo:block font-weight="bold">PAYMENT SUMMARY</fo:block>
           <% render_print_item(I18n.t("payment_summary.total_price"), @accession.payment_summary['total_price']) %>
